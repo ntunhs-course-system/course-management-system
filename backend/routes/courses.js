@@ -63,7 +63,7 @@ router.get('/', (req, res) => {
     `SELECT c.id, c.course_no, c.name, c.department, c.class_name, c.teachers,
             c.credits, c.course_type, c.time_text, c.classroom, c.enrolled
        FROM courses c ${whereSql}
-      ORDER BY c.department, c.class_name, c.name
+      ORDER BY c.department, c.class_name, c.name, c.id
       LIMIT ? OFFSET ?`
   ).all(...params, pageSize, (page - 1) * pageSize);
 

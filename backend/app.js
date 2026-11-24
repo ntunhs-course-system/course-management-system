@@ -39,6 +39,14 @@ function createApp() {
     if (err.type === 'entity.parse.failed') {
       return res.status(400).json({ error: 'JSON 格式錯誤' });
     }
+    if (err.type === 'entity.too.large') {
+      return res.status(413).json({ error: '傳送的資料太大' });
+    }
+    // 其他使用者端錯誤（4xx）照原本狀態碼回，不當成伺服器錯誤
+    const status = err.status || err.statusCode;
+    if (status >= 400 && status < 500) {
+      return res.status(status).json({ error: '請求格式錯誤' });
+    }
     console.error(err);
     res.status(500).json({ error: '伺服器錯誤' });
   });

@@ -6,10 +6,11 @@ const { loginRequired } = require('../middleware/auth');
 
 const router = express.Router();
 
-// 15 分鐘內最多 5 次
+// 15 分鐘內最多失敗 5 次（登入成功不算）
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 5,
+  skipSuccessfulRequests: true,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: { error: '嘗試次數過多，請 15 分鐘後再試' },

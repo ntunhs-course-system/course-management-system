@@ -114,6 +114,32 @@ test('單一課程與系所清單', async () => {
   assert.ok(depts.body.length > 0);
 });
 
+test('登入成功不算進嘗試次數', async () => {
+  for (let i = 0; i < 7; i++) {
+    const r = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+    assert.equal(r.status, 200, `第 ${i + 1} 次正確登入應該成功`);
+  }
+});
+
+test('傳送的資料太大回 413，不是 500', async () => {
+  const r = await call('POST', '/api/login', { body: { username: 'a', password: 'x'.repeat(200000) } });
+  assert.equal(r.status, 413);
+});
+
+test('課程查詢：翻頁不會重複或漏掉課程', async () => {
+  const first = await call('GET', '/api/courses?page_size=50');
+  const total = first.body.total;
+  const seen = new Set();
+  for (let p = 1; (p - 1) * 50 < total; p++) {
+    const r = await call('GET', `/api/courses?page_size=50&page=${p}`);
+    for (const c of r.body.items) {
+      assert.ok(!seen.has(c.id), `課程 ${c.id} 在不同頁重複出現`);
+      seen.add(c.id);
+    }
+  }
+  assert.equal(seen.size, total);
+});
+
 test('登入嘗試超過 5 次會被擋', async () => {
   let last;
   for (let i = 0; i < 6; i++) {
