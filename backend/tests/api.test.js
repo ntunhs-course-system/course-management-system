@@ -152,10 +152,17 @@ test('課程查詢：翻頁不會重複或漏掉課程', async () => {
   assert.equal(seen.size, total);
 });
 
-test('登入嘗試超過 5 次會被擋', async () => {
+// 會把 admin1 鎖 15 分鐘，所以放最後
+test('同一個帳號失敗超過 5 次會被擋，其他帳號不受影響', async () => {
   let last;
   for (let i = 0; i < 6; i++) {
-    last = await call('POST', '/api/login', { body: { username: 'x', password: 'y' } });
+    last = await call('POST', '/api/login', { body: { username: 'admin1', password: 'wrong-pass' } });
   }
   assert.equal(last.status, 429);
+
+  const locked = await call('POST', '/api/login', { body: { username: 'admin1', password: 'admin-pass-123' } });
+  assert.equal(locked.status, 429, '被鎖住時密碼正確也不能登入');
+
+  const other = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+  assert.equal(other.status, 200, '同一個 IP 的其他帳號還是可以登入');
 });

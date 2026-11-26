@@ -1,15 +1,27 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const { appDb } = require('../db');
 const { loginRequired, isPasswordTooLong, MAX_USERNAME_LENGTH } = require('../middleware/auth');
 
 const router = express.Router();
 
-// 15 分鐘內最多失敗 5 次（登入成功不算）
+// 校園網路很多人共用同一個對外 IP，所以用「IP + 帳號」計次：
+// 同一個帳號 15 分鐘內最多失敗 5 次，不會因為別人打錯就讓大家都登不進去（登入成功不算）
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 5,
+  skipSuccessfulRequests: true,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip)}|${req.body.username.trim()}`,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: '嘗試次數過多，請 15 分鐘後再試' },
+});
+
+// 同一個 IP 換很多帳號亂試，另外用比較寬的上限擋
+const loginIpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
   skipSuccessfulRequests: true,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
@@ -35,7 +47,7 @@ function validateLoginBody(req, res, next) {
   next();
 }
 
-router.post('/login', validateLoginBody, loginLimiter, async (req, res, next) => {
+router.post('/login', validateLoginBody, loginIpLimiter, loginLimiter, async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = findUserByName.get(username.trim());
