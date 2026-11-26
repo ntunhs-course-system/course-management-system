@@ -102,32 +102,32 @@ test('沒登入不能用課程 API', async () => {
 });
 
 test('課程查詢：關鍵字、篩選、分頁', async () => {
-  const all = await get('/api/courses?page_size=5');
+  const all = await get('/api/courses?semester=115-1&page_size=5');
   assert.equal(all.status, 200);
   assert.ok(all.body.total > 1000);
   assert.equal(all.body.items.length, 5);
 
-  const req = await get(`/api/courses?course_type=${encodeURIComponent('必修')}&weekday=2&page_size=50`);
+  const req = await get(`/api/courses?semester=115-1&course_type=${encodeURIComponent('必修')}&weekday=2&page_size=50`);
   assert.equal(req.status, 200);
   assert.ok(req.body.items.every((c) => c.course_type === '必修'));
 
-  const kw = await get(`/api/courses?keyword=${encodeURIComponent('資訊')}`);
+  const kw = await get(`/api/courses?semester=115-1&keyword=${encodeURIComponent('資訊')}`);
   assert.ok(kw.body.total > 0);
 });
 
 test('課程查詢：參數格式錯誤回 400，關鍵字 % 不會變萬用字元', async () => {
-  assert.equal((await get('/api/courses?weekday=9')).status, 400);
-  assert.equal((await get('/api/courses?page_size=999')).status, 400);
-  assert.equal((await get('/api/courses?course_type=abc')).status, 400);
-  const pct = await get('/api/courses?keyword=%25');
+  assert.equal((await get('/api/courses?semester=115-1&weekday=9')).status, 400);
+  assert.equal((await get('/api/courses?semester=115-1&page_size=999')).status, 400);
+  assert.equal((await get('/api/courses?semester=115-1&course_type=abc')).status, 400);
+  const pct = await get('/api/courses?semester=115-1&keyword=%25');
   assert.equal(pct.status, 200);
   assert.equal(pct.body.total, 0);
-  const inj = await get(`/api/courses?keyword=${encodeURIComponent("' OR 1=1 --")}`);
+  const inj = await get(`/api/courses?semester=115-1&keyword=${encodeURIComponent("' OR 1=1 --")}`);
   assert.equal(inj.body.total, 0);
 });
 
 test('單一課程與系所清單', async () => {
-  const list = await get('/api/courses?page_size=1');
+  const list = await get('/api/courses?semester=115-1&page_size=1');
   const id = list.body.items[0].id;
   const one = await get(`/api/courses/${encodeURIComponent(id)}`);
   assert.equal(one.status, 200);
@@ -135,8 +135,22 @@ test('單一課程與系所清單', async () => {
 
   assert.equal((await get('/api/courses/does-not-exist')).status, 404);
 
-  const depts = await get('/api/courses/departments');
+  const depts = await get('/api/courses/departments?semester=115-1');
   assert.ok(depts.body.length > 0);
+});
+
+test('一定要指定學期，學期清單可以查', async () => {
+  assert.equal((await get('/api/courses')).status, 400);
+  assert.equal((await get('/api/courses?semester=')).status, 400);
+  assert.equal((await get('/api/courses/departments')).status, 400);
+
+  const sems = await get('/api/courses/semesters');
+  assert.equal(sems.status, 200);
+  assert.ok(sems.body.includes('115-1'));
+
+  const none = await get('/api/courses?semester=999-9');
+  assert.equal(none.status, 200);
+  assert.equal(none.body.total, 0);
 });
 
 test('登入成功不算進嘗試次數', async () => {
@@ -152,11 +166,11 @@ test('傳送的資料太大回 413，不是 500', async () => {
 });
 
 test('課程查詢：翻頁不會重複或漏掉課程', async () => {
-  const first = await get('/api/courses?page_size=50');
+  const first = await get('/api/courses?semester=115-1&page_size=50');
   const total = first.body.total;
   const seen = new Set();
   for (let p = 1; (p - 1) * 50 < total; p++) {
-    const r = await get(`/api/courses?page_size=50&page=${p}`);
+    const r = await get(`/api/courses?semester=115-1&page_size=50&page=${p}`);
     for (const c of r.body.items) {
       assert.ok(!seen.has(c.id), `課程 ${c.id} 在不同頁重複出現`);
       seen.add(c.id);

@@ -26,7 +26,12 @@ router.get('/', (req, res) => {
   let page = toInt(q.page, { min: 1, max: 100000 });
   let pageSize = toInt(q.page_size, { min: 1, max: MAX_PAGE_SIZE });
   const courseType = str(q.course_type);
+  const semester = str(q.semester);
 
+  // 一定要指定學期，不然不同學期的課會混在一起
+  if (!semester) {
+    return res.status(400).json({ error: '請指定學期 semester，例如 ?semester=115-1' });
+  }
   if (grade === null || weekday === null || page === null || pageSize === null) {
     return res.status(400).json({ error: '查詢參數格式錯誤' });
   }
@@ -40,7 +45,7 @@ router.get('/', (req, res) => {
   const params = [];
   const add = (sql, ...values) => { where.push(sql); params.push(...values); };
 
-  if (str(q.semester)) add('c.semester = ?', str(q.semester));
+  add('c.semester = ?', semester);
   if (str(q.department)) add('c.department = ?', str(q.department));
   if (courseType) add('c.course_type = ?', courseType);
   if (grade) add('c.grade = ?', grade);
@@ -70,15 +75,23 @@ router.get('/', (req, res) => {
   res.json({ total, page, page_size: pageSize, items });
 });
 
-const listDepartments = courseDb.prepare('SELECT DISTINCT department FROM courses ORDER BY department');
+// 給前端做學期下拉選單，新的學期在前面
+const listSemesters = courseDb.prepare('SELECT DISTINCT semester FROM courses ORDER BY semester DESC');
+
+router.get('/semesters', (req, res) => {
+  res.json(listSemesters.all().map((r) => r.semester));
+});
+
 const listDepartmentsBySemester = courseDb.prepare(
   'SELECT DISTINCT department FROM courses WHERE semester = ? ORDER BY department'
 );
 
 router.get('/departments', (req, res) => {
   const semester = str(req.query.semester);
-  const rows = semester ? listDepartmentsBySemester.all(semester) : listDepartments.all();
-  res.json(rows.map((r) => r.department));
+  if (!semester) {
+    return res.status(400).json({ error: '請指定學期 semester，例如 ?semester=115-1' });
+  }
+  res.json(listDepartmentsBySemester.all(semester).map((r) => r.department));
 });
 
 const getCourse = courseDb.prepare('SELECT * FROM courses WHERE id = ?');
