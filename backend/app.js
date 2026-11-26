@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
+const { loginRequired } = require('./middleware/auth');
 
 function createApp() {
   if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
@@ -31,7 +32,8 @@ function createApp() {
   app.get('/api/health', (req, res) => res.json({ ok: true }));
 
   app.use('/api', require('./routes/auth'));
-  app.use('/api/courses', require('./routes/courses'));
+  // 依 API 指南，查課程要先登入
+  app.use('/api/courses', loginRequired, require('./routes/courses'));
 
   app.use('/api', (req, res) => res.status(404).json({ error: '找不到這個 API' }));
 
