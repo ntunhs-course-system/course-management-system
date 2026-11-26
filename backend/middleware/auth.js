@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { appDb } = require('../db');
+const { sendError } = require('../utils/errors');
 
 const BCRYPT_ROUNDS = 12;
 
@@ -19,14 +20,26 @@ function hashPassword(password) {
   return bcrypt.hash(password, BCRYPT_ROUNDS);
 }
 
+// 瀏覽器有帶 sid cookie，但伺服器已經找不到登入狀態 → 視為逾時
+function hasSessionCookie(req) {
+  return /(?:^|;\s*)sid=/.test(req.headers.cookie || '');
+}
+
 function loginRequired(req, res, next) {
   const userId = req.session && req.session.userId;
-  if (!userId) return res.status(401).json({ error: '請先登入' });
+  if (!userId) {
+    return hasSessionCookie(req)
+      ? sendError(res, 401, 'SESSION_EXPIRED')
+      : sendError(res, 401, 'NOT_LOGGED_IN');
+  }
 
   // 帳號被停用就直接登出
   const user = findActiveUser.get(userId);
   if (!user) {
-    return req.session.destroy(() => res.status(401).json({ error: '請先登入' }));
+    return req.session.destroy(() => {
+      res.clearCookie('sid');
+      sendError(res, 401, 'ACCOUNT_DISABLED');
+    });
   }
   req.user = user;
   next();
@@ -34,7 +47,7 @@ function loginRequired(req, res, next) {
 
 function adminOnly(req, res, next) {
   if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ error: '沒有權限' });
+    return sendError(res, 403, 'FORBIDDEN');
   }
   next();
 }

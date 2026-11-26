@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
 const { loginRequired } = require('./middleware/auth');
+const { sendError } = require('./utils/errors');
 
 function createApp() {
   if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
@@ -31,26 +32,21 @@ function createApp() {
 
   app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-  app.use('/api', require('./routes/auth'));
+  app.use('/api/auth', require('./routes/auth'));
   // 依 API 指南，查課程要先登入
   app.use('/api/courses', loginRequired, require('./routes/courses'));
 
-  app.use('/api', (req, res) => res.status(404).json({ error: '找不到這個 API' }));
+  app.use('/api', (req, res) => sendError(res, 404, 'API_NOT_FOUND'));
 
+  // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
-    if (err.type === 'entity.parse.failed') {
-      return res.status(400).json({ error: 'JSON 格式錯誤' });
-    }
-    if (err.type === 'entity.too.large') {
-      return res.status(413).json({ error: '傳送的資料太大' });
-    }
+    if (err.type === 'entity.parse.failed') return sendError(res, 400, 'INVALID_JSON');
+    if (err.type === 'entity.too.large') return sendError(res, 413, 'PAYLOAD_TOO_LARGE');
     // 其他使用者端錯誤（4xx）照原本狀態碼回，不當成伺服器錯誤
     const status = err.status || err.statusCode;
-    if (status >= 400 && status < 500) {
-      return res.status(status).json({ error: '請求格式錯誤' });
-    }
+    if (status >= 400 && status < 500) return sendError(res, status, 'VALIDATION_ERROR');
     console.error(err);
-    res.status(500).json({ error: '伺服器錯誤' });
+    sendError(res, 500, 'INTERNAL_ERROR');
   });
 
   return app;

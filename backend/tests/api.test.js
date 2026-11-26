@@ -43,7 +43,7 @@ before(async () => {
   await new Promise((r) => server.once('listening', r));
   base = `http://127.0.0.1:${server.address().port}`;
 
-  readerCookie = (await call('POST', '/api/login', { body: { username: 'reader', password: 'reader-pass-123' } })).cookie;
+  readerCookie = (await call('POST', '/api/auth/login', { body: { username: 'reader', password: 'reader-pass-123' } })).cookie;
 });
 
 after(() => {
@@ -52,46 +52,46 @@ after(() => {
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
 
-test('登入成功後 /api/me 回傳使用者，登出後失效', async () => {
-  const login = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+test('登入成功後 /api/auth/me 回傳使用者，登出後失效', async () => {
+  const login = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'student-pass-123' } });
   assert.equal(login.status, 200);
   assert.equal(login.body.user.role, 'student');
   assert.ok(login.cookie, '應該發 session cookie');
   assert.equal(login.body.user.password_hash, undefined, '不能回傳密碼');
 
-  const me = await call('GET', '/api/me', { cookie: login.cookie });
+  const me = await call('GET', '/api/auth/me', { cookie: login.cookie });
   assert.equal(me.status, 200);
   assert.equal(me.body.username, 'stu1');
 
-  await call('POST', '/api/logout', { cookie: login.cookie });
-  const after = await call('GET', '/api/me', { cookie: login.cookie });
+  await call('POST', '/api/auth/logout', { cookie: login.cookie });
+  const after = await call('GET', '/api/auth/me', { cookie: login.cookie });
   assert.equal(after.status, 401);
 });
 
 test('密碼錯、帳號不存在、帳號停用都回一樣的錯誤', async () => {
-  const wrong = await call('POST', '/api/login', { body: { username: 'stu1', password: 'nope-nope' } });
-  const missing = await call('POST', '/api/login', { body: { username: 'nobody', password: 'nope-nope' } });
-  const disabled = await call('POST', '/api/login', { body: { username: 'gone', password: 'disabled-pass-123' } });
+  const wrong = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'nope-nope' } });
+  const missing = await call('POST', '/api/auth/login', { body: { username: 'nobody', password: 'nope-nope' } });
+  const disabled = await call('POST', '/api/auth/login', { body: { username: 'gone', password: 'disabled-pass-123' } });
   for (const r of [wrong, missing, disabled]) {
     assert.equal(r.status, 401);
-    assert.equal(r.body.error, '帳號或密碼錯誤');
+    assert.equal(r.body.error.code, 'INVALID_CREDENTIALS');
   }
 });
 
 test('帳號超過 50 字、密碼超過 72 bytes 回 400', async () => {
-  const longName = await call('POST', '/api/login', { body: { username: 'a'.repeat(51), password: 'student-pass-123' } });
+  const longName = await call('POST', '/api/auth/login', { body: { username: 'a'.repeat(51), password: 'student-pass-123' } });
   assert.equal(longName.status, 400);
-  const longPw = await call('POST', '/api/login', { body: { username: 'stu1', password: 'x'.repeat(73) } });
+  const longPw = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'x'.repeat(73) } });
   assert.equal(longPw.status, 400);
   // 25 個中文字 = 75 bytes，字數沒超過但 bytes 超過
-  const zhPw = await call('POST', '/api/login', { body: { username: 'stu1', password: '密'.repeat(25) } });
+  const zhPw = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: '密'.repeat(25) } });
   assert.equal(zhPw.status, 400);
-  const ok = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+  const ok = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'student-pass-123' } });
   assert.equal(ok.status, 200);
 });
 
-test('沒登入不能用 /api/me', async () => {
-  const r = await call('GET', '/api/me');
+test('沒登入不能用 /api/auth/me', async () => {
+  const r = await call('GET', '/api/auth/me');
   assert.equal(r.status, 401);
 });
 
@@ -155,13 +155,13 @@ test('一定要指定學期，學期清單可以查', async () => {
 
 test('登入成功不算進嘗試次數', async () => {
   for (let i = 0; i < 7; i++) {
-    const r = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+    const r = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'student-pass-123' } });
     assert.equal(r.status, 200, `第 ${i + 1} 次正確登入應該成功`);
   }
 });
 
 test('傳送的資料太大回 413，不是 500', async () => {
-  const r = await call('POST', '/api/login', { body: { username: 'a', password: 'x'.repeat(200000) } });
+  const r = await call('POST', '/api/auth/login', { body: { username: 'a', password: 'x'.repeat(200000) } });
   assert.equal(r.status, 413);
 });
 
@@ -183,13 +183,13 @@ test('課程查詢：翻頁不會重複或漏掉課程', async () => {
 test('同一個帳號失敗超過 5 次會被擋，其他帳號不受影響', async () => {
   let last;
   for (let i = 0; i < 6; i++) {
-    last = await call('POST', '/api/login', { body: { username: 'admin1', password: 'wrong-pass' } });
+    last = await call('POST', '/api/auth/login', { body: { username: 'admin1', password: 'wrong-pass' } });
   }
   assert.equal(last.status, 429);
 
-  const locked = await call('POST', '/api/login', { body: { username: 'admin1', password: 'admin-pass-123' } });
+  const locked = await call('POST', '/api/auth/login', { body: { username: 'admin1', password: 'admin-pass-123' } });
   assert.equal(locked.status, 429, '被鎖住時密碼正確也不能登入');
 
-  const other = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+  const other = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'student-pass-123' } });
   assert.equal(other.status, 200, '同一個 IP 的其他帳號還是可以登入');
 });

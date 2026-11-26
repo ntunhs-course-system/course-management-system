@@ -1,5 +1,6 @@
 const express = require('express');
 const { courseDb } = require('../db');
+const { sendError } = require('../utils/errors');
 
 const router = express.Router();
 
@@ -30,15 +31,15 @@ router.get('/', (req, res) => {
 
   // 一定要指定學期，不然不同學期的課會混在一起
   if (!semester) {
-    return res.status(400).json({ error: '請指定學期 semester，例如 ?semester=115-1' });
+    return sendError(res, 400, 'VALIDATION_ERROR', '請指定學期 semester，例如 ?semester=115-1');
   }
   if (grade === null || weekday === null || page === null || pageSize === null) {
-    return res.status(400).json({ error: '查詢參數格式錯誤' });
+    return sendError(res, 400, 'VALIDATION_ERROR', '查詢參數格式錯誤');
   }
   if (page === undefined) page = 1;
   if (pageSize === undefined) pageSize = 10;
   if (courseType && !COURSE_TYPES.includes(courseType)) {
-    return res.status(400).json({ error: 'course_type 只能是「必修」或「選修」' });
+    return sendError(res, 400, 'VALIDATION_ERROR', 'course_type 只能是「必修」或「選修」');
   }
 
   const where = [];
@@ -89,7 +90,7 @@ const listDepartmentsBySemester = courseDb.prepare(
 router.get('/departments', (req, res) => {
   const semester = str(req.query.semester);
   if (!semester) {
-    return res.status(400).json({ error: '請指定學期 semester，例如 ?semester=115-1' });
+    return sendError(res, 400, 'VALIDATION_ERROR', '請指定學期 semester，例如 ?semester=115-1');
   }
   res.json(listDepartmentsBySemester.all(semester).map((r) => r.department));
 });
@@ -102,7 +103,7 @@ const getTimeslots = courseDb.prepare(
 
 router.get('/:id', (req, res) => {
   const course = getCourse.get(req.params.id);
-  if (!course) return res.status(404).json({ error: '找不到這門課' });
+  if (!course) return sendError(res, 404, 'NOT_FOUND', '找不到這門課');
   res.json({ ...course, timeslots: getTimeslots.all(req.params.id) });
 });
 
