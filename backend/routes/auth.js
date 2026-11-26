@@ -47,8 +47,8 @@ router.post('/login', validateLoginBody, loginLimiter, async (req, res, next) =>
 
     req.session.regenerate((err) => {
       if (err) return next(err);
+      // 只存 userId，角色每次由 loginRequired 從資料庫重新讀
       req.session.userId = user.id;
-      req.session.role = user.role;
       res.json({
         ok: true,
         user: {
