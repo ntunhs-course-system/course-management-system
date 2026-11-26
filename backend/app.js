@@ -38,6 +38,7 @@ function createApp() {
   app.use('/api/auth', require('./routes/auth'));
   // 依 API 指南，查課程要先登入
   app.use('/api/courses', loginRequired, require('./routes/courses'));
+  app.use('/api/rooms', loginRequired, require('./routes/rooms'));
 
   app.use('/api', (req, res) => sendError(res, 404, 'API_NOT_FOUND'));
 
