@@ -68,6 +68,39 @@ test('登入成功後 /api/auth/me 回傳使用者，登出後失效', async () 
   assert.equal(after.status, 401);
 });
 
+test('伺服器重開後不用重新登入，登出會刪掉資料庫裡的登入狀態', async () => {
+  const login = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+  const countSessions = () => appDb.prepare('SELECT COUNT(*) AS n FROM sessions').get().n;
+  const before = countSessions();
+
+  // 開一台新的伺服器（新的程式、同一個 app.db），模擬重開
+  const restarted = createApp().listen(0);
+  await new Promise((r) => restarted.once('listening', r));
+  try {
+    const res = await fetch(`http://127.0.0.1:${restarted.address().port}/api/auth/me`, {
+      headers: { Cookie: login.cookie },
+    });
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).username, 'stu1');
+  } finally {
+    restarted.close();
+  }
+
+  await call('POST', '/api/auth/logout', { cookie: login.cookie });
+  assert.equal(countSessions(), before - 1);
+});
+
+test('過期的登入狀態不能用', async () => {
+  const login = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+  appDb.prepare('UPDATE sessions SET expires = ?').run(Date.now() - 1000);
+  const me = await call('GET', '/api/auth/me', { cookie: login.cookie });
+  assert.equal(me.status, 401);
+  assert.equal(me.body.error.code, 'SESSION_EXPIRED');
+
+  // 其他測試要用的 reader 也被弄過期了，重新登入
+  readerCookie = (await call('POST', '/api/auth/login', { body: { username: 'reader', password: 'reader-pass-123' } })).cookie;
+});
+
 test('密碼錯、帳號不存在、帳號停用都回一樣的錯誤', async () => {
   const wrong = await call('POST', '/api/auth/login', { body: { username: 'stu1', password: 'nope-nope' } });
   const missing = await call('POST', '/api/auth/login', { body: { username: 'nobody', password: 'nope-nope' } });

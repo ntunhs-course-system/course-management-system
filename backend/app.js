@@ -3,6 +3,8 @@ const session = require('express-session');
 const helmet = require('helmet');
 const { loginRequired } = require('./middleware/auth');
 const { sendError } = require('./utils/errors');
+const { appDb } = require('./db');
+const { SqliteSessionStore } = require('./session-store');
 
 function createApp() {
   if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
@@ -20,6 +22,7 @@ function createApp() {
   app.use(session({
     name: 'sid',
     secret: process.env.SESSION_SECRET,
+    store: new SqliteSessionStore(appDb),
     resave: false,
     saveUninitialized: false,
     cookie: {
