@@ -71,6 +71,18 @@ test('密碼錯、帳號不存在、帳號停用都回一樣的錯誤', async ()
   }
 });
 
+test('帳號超過 50 字、密碼超過 72 bytes 回 400', async () => {
+  const longName = await call('POST', '/api/login', { body: { username: 'a'.repeat(51), password: 'student-pass-123' } });
+  assert.equal(longName.status, 400);
+  const longPw = await call('POST', '/api/login', { body: { username: 'stu1', password: 'x'.repeat(73) } });
+  assert.equal(longPw.status, 400);
+  // 25 個中文字 = 75 bytes，字數沒超過但 bytes 超過
+  const zhPw = await call('POST', '/api/login', { body: { username: 'stu1', password: '密'.repeat(25) } });
+  assert.equal(zhPw.status, 400);
+  const ok = await call('POST', '/api/login', { body: { username: 'stu1', password: 'student-pass-123' } });
+  assert.equal(ok.status, 200);
+});
+
 test('沒登入不能用 /api/me', async () => {
   const r = await call('GET', '/api/me');
   assert.equal(r.status, 401);

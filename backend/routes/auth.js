@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const { appDb } = require('../db');
-const { loginRequired } = require('../middleware/auth');
+const { loginRequired, isPasswordTooLong, MAX_USERNAME_LENGTH } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -23,13 +23,21 @@ const findUserByName = appDb.prepare(
 // 帳號不存在時也比對一次，避免從回應時間猜出帳號
 const DUMMY_HASH = bcrypt.hashSync('dummy-password-for-timing', 12);
 
-router.post('/login', loginLimiter, async (req, res, next) => {
-  try {
-    const { username, password } = req.body || {};
-    if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
-      return res.status(400).json({ error: '請輸入帳號和密碼' });
-    }
+// 格式檢查放在次數限制前面：格式錯的請求不會比對密碼，不用算進嘗試次數
+function validateLoginBody(req, res, next) {
+  const { username, password } = req.body || {};
+  if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
+    return res.status(400).json({ error: '請輸入帳號和密碼' });
+  }
+  if (username.length > MAX_USERNAME_LENGTH || isPasswordTooLong(password)) {
+    return res.status(400).json({ error: '帳號或密碼太長' });
+  }
+  next();
+}
 
+router.post('/login', validateLoginBody, loginLimiter, async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
     const user = findUserByName.get(username.trim());
     const ok = await bcrypt.compare(password, user ? user.password_hash : DUMMY_HASH);
 
