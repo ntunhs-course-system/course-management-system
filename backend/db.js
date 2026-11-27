@@ -3,7 +3,15 @@ const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
 
 // courses.db 會被 build_db.py 重建，帳號另外存在 app.db
-const courseDbPath = path.resolve(__dirname, process.env.COURSE_DB_PATH || '../courses.db');
+// 沒設定 COURSE_DB_PATH 時，優先用資料組新版的 database/courses.db，
+// 還沒有 database/ 的電腦退回根目錄的舊版 courses.db
+function defaultCourseDbPath() {
+  const candidates = ['../database/courses.db', '../courses.db'].map((p) => path.resolve(__dirname, p));
+  return candidates.find((p) => fs.existsSync(p)) || candidates[0];
+}
+const courseDbPath = process.env.COURSE_DB_PATH
+  ? path.resolve(__dirname, process.env.COURSE_DB_PATH)
+  : defaultCourseDbPath();
 const appDbPath = path.resolve(__dirname, process.env.APP_DB_PATH || 'data/app.db');
 
 if (!fs.existsSync(courseDbPath)) {
