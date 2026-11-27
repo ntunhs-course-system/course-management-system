@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者首頁｜北護課程查詢系統</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="student-page admin-page">
+
+    <header class="topbar" role="banner">
+        <div class="topbar-logo">北護課程查詢系統</div>
+        <div class="topbar-user">
+            <span>管理者</span>
+            <span class="user-name" id="adminDisplayName">管理者</span>
+            <a href="index.html" id="adminLogout">登出</a>
+        </div>
+    </header>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+            <div class="sidebar-title">管理功能</div>
+            <nav class="sidebar-menu" aria-label="管理者功能選單">
+                <button type="button" class="menu-item active" data-target="course-manage">課程管理</button>
+                <button type="button" class="menu-item" data-target="course-import">匯入課程</button>
+                <button type="button" class="menu-item" data-target="account-manage">帳號管理</button>
+                <button type="button" class="menu-item" data-target="admin-account">個人帳號</button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+
+            <div class="page-heading">
+                <div>
+                    <p class="page-breadcrumb" id="pageBreadcrumb">管理者端 / 課程管理</p>
+                    <h1 id="pageTitle">課程管理</h1>
+                </div>
+                <div class="semester-label">115-1 學期</div>
+            </div>
+
+            <!-- ========== 課程管理 ========== -->
+            <section id="course-manage" class="content-section active">
+
+                <div class="content-card">
+                    <div class="card-heading">
+                        <h2>查詢條件</h2>
+                        <p>依條件搜尋要維護的課程資料</p>
+                    </div>
+
+                    <div class="search-grid">
+                        <div class="search-field">
+                            <label for="adminFilterSemester">學期</label>
+                            <select id="adminFilterSemester">
+                                <option value="">全部學期</option>
+                                <option value="115-1">115-1</option>
+                                <option value="114-2">114-2</option>
+                                <option value="114-1">114-1</option>
+                            </select>
+                        </div>
+                        <div class="search-field">
+                            <label for="adminFilterDepartment">開課系所</label>
+                            <select id="adminFilterDepartment">
+                                <option value="">全部系所</option>
+                                <option>資訊管理系</option>
+                                <option>健康事業管理系</option>
+                                <option>護理系</option>
+                            </select>
+                        </div>
+                        <div class="search-field">
+                            <label for="adminFilterType">必選修</label>
+                            <select id="adminFilterType">
+                                <option value="">全部</option>
+                                <option>必修</option>
+                                <option>選修</option>
+                            </select>
+                        </div>
+                        <div class="search-field keyword-field">
+                            <label for="adminFilterKeyword">關鍵字</label>
+                            <input type="text" id="adminFilterKeyword" placeholder="課號、課程名稱或授課教師">
+                        </div>
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="button" class="primary-button" id="adminSearchCourses">查詢</button>
+                        <button type="button" class="secondary-button" id="adminClearSearch">清除</button>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-heading result-heading">
+                        <div>
+                            <h2>課程列表</h2>
+                            <p id="adminCourseCount" aria-live="polite">課程列表：共 0 筆</p>
+                        </div>
+                        <button type="button" class="primary-button" id="openAddCourse">＋ 新增課程</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="course-table">
+                            <thead>
+                                <tr>
+                                    <th>課號</th>
+                                    <th>課程名稱</th>
+                                    <th>開課班級</th>
+                                    <th>授課教師</th>
+                                    <th>學分</th>
+                                    <th>必選修</th>
+                                    <th>星期／節次</th>
+                                    <th>教室</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCourseTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="adminCoursePagination">
+                        <span id="adminPaginationInfo">第 1 頁 / 共 1 頁</span>
+                        <div>
+                            <button type="button" class="secondary-button" id="adminPrevPage">上一頁</button>
+                            <span id="adminPageButtons"></span>
+                            <button type="button" class="secondary-button" id="adminNextPage">下一頁</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 匯入課程 ========== -->
+            <section id="course-import" class="content-section">
+                <div class="section-header">
+                    <p>上傳 CSV 或 Excel 課程檔，先預覽再確認匯入。示範模式會模擬解析結果。</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-heading">
+                        <h2>匯入設定</h2>
+                        <p>選擇學期、匯入方式與資料檔（單檔上限 5 MB）</p>
+                    </div>
+
+                    <div class="search-grid">
+                        <div class="search-field">
+                            <label for="importSemester">匯入學期 <span class="required-mark">*</span></label>
+                            <select id="importSemester">
+                                <option value="115-1">115-1</option>
+                                <option value="114-2">114-2</option>
+                                <option value="114-1">114-1</option>
+                            </select>
+                        </div>
+                        <div class="search-field">
+                            <label for="importMode">匯入方式 <span class="required-mark">*</span></label>
+                            <select id="importMode">
+                                <option value="upsert">新增並更新</option>
+                                <option value="replace">全部取代</option>
+                            </select>
+                        </div>
+                        <div class="search-field keyword-field">
+                            <label for="importFile">課程資料檔 <span class="required-mark">*</span></label>
+                            <input type="file" id="importFile" accept=".csv,.xlsx,.xls">
+                            <p class="file-name-label" id="importFileName">尚未選擇檔案</p>
+                        </div>
+                    </div>
+
+                    <div class="import-dropzone" style="margin-top: 16px;">
+                        欄位需包含：<strong>課號、課程名稱、開課系所、開課班級、授課教師、學分、必選修、星期、節次、教室、修課人數</strong>
+                        <br>可先下載範本檔再填寫上傳。
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="button" class="secondary-button" id="downloadTemplate">下載範本檔</button>
+                        <button type="button" class="primary-button" id="previewImport">預覽匯入</button>
+                    </div>
+                </div>
+
+                <div class="content-card" id="importPreviewCard" hidden>
+                    <div class="card-heading result-heading">
+                        <div>
+                            <h2>匯入預覽</h2>
+                            <p id="importPreviewHint">請確認下列資料後再匯入</p>
+                        </div>
+                        <div class="search-actions" style="margin-top: 0;">
+                            <button type="button" class="secondary-button" id="cancelImport">取消</button>
+                            <button type="button" class="primary-button" id="confirmImport">確認匯入</button>
+                        </div>
+                    </div>
+
+                    <div class="import-stats">
+                        <div class="import-stat">
+                            <span>總筆數</span>
+                            <strong id="importTotal">0</strong>
+                        </div>
+                        <div class="import-stat is-ok">
+                            <span>可匯入</span>
+                            <strong id="importOk">0</strong>
+                        </div>
+                        <div class="import-stat is-error">
+                            <span>錯誤</span>
+                            <strong id="importError">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="course-table">
+                            <thead>
+                                <tr>
+                                    <th>狀態</th>
+                                    <th>課號</th>
+                                    <th>課程名稱</th>
+                                    <th>教師</th>
+                                    <th>學分</th>
+                                    <th>說明</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importPreviewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 帳號管理 ========== -->
+            <section id="account-manage" class="content-section">
+                <div class="content-card">
+                    <div class="card-heading">
+                        <h2>查詢條件</h2>
+                        <p>依身分、狀態與關鍵字查詢使用者帳號</p>
+                    </div>
+
+                    <div class="search-grid">
+                        <div class="search-field">
+                            <label for="userFilterRole">身分</label>
+                            <select id="userFilterRole">
+                                <option value="">全部</option>
+                                <option value="student">學生</option>
+                                <option value="admin">管理者</option>
+                            </select>
+                        </div>
+                        <div class="search-field">
+                            <label for="userFilterStatus">狀態</label>
+                            <select id="userFilterStatus">
+                                <option value="">全部</option>
+                                <option value="active">啟用</option>
+                                <option value="disabled">停用</option>
+                            </select>
+                        </div>
+                        <div class="search-field keyword-field">
+                            <label for="userFilterKeyword">關鍵字</label>
+                            <input type="text" id="userFilterKeyword" placeholder="帳號、姓名或電子郵件">
+                        </div>
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="button" class="primary-button" id="searchUsers">查詢</button>
+                        <button type="button" class="secondary-button" id="clearUserSearch">清除</button>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-heading result-heading">
+                        <div>
+                            <h2>帳號列表</h2>
+                            <p id="userAccountCount" aria-live="polite">帳號列表：共 0 筆</p>
+                        </div>
+                        <button type="button" class="primary-button" id="openAddUser">＋ 新增帳號</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="course-table">
+                            <thead>
+                                <tr>
+                                    <th>帳號</th>
+                                    <th>姓名</th>
+                                    <th>身分</th>
+                                    <th>系所</th>
+                                    <th>電子郵件</th>
+                                    <th>狀態</th>
+                                    <th>最後登入</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <span id="userPaginationInfo">第 1 頁 / 共 1 頁</span>
+                        <div>
+                            <button type="button" class="secondary-button" id="userPrevPage">上一頁</button>
+                            <span id="userPageButtons"></span>
+                            <button type="button" class="secondary-button" id="userNextPage">下一頁</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 個人帳號 ========== -->
+            <section id="admin-account" class="content-section">
+                <div class="section-header">
+                    <p>查看及管理目前登入管理者的帳號資料。</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-heading">
+                        <h2>個人基本資料</h2>
+                        <p>查看目前登入管理者的基本資訊。</p>
+                    </div>
+
+                    <div id="adminAccountInfo" class="account-card">
+                        <div class="account-info-item">
+                            <span>姓名</span>
+                            <strong id="adminName">陳管理員</strong>
+                        </div>
+                        <div class="account-info-item">
+                            <span>帳號</span>
+                            <strong id="adminAccountId">A0000001</strong>
+                        </div>
+                        <div class="account-info-item">
+                            <span>單位</span>
+                            <strong id="adminUnit">教務處課務組</strong>
+                        </div>
+                        <div class="account-info-item">
+                            <span>電子郵件</span>
+                            <strong id="adminEmail">admin@ntunhs.edu.tw</strong>
+                        </div>
+                        <button type="button" class="primary-button" id="editAdminAccount">修改個人資料</button>
+                    </div>
+
+                    <form id="editAdminAccountForm" style="display:none;">
+                        <div class="form-group">
+                            <label for="editAdminName">姓名</label>
+                            <input type="text" id="editAdminName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAdminEmail">電子郵件</label>
+                            <input type="email" id="editAdminEmail" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="primary-button">儲存修改</button>
+                            <button type="button" class="secondary-button" id="cancelEditAdmin">取消</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-heading">
+                        <h2>帳號安全</h2>
+                        <p>管理目前帳號的登入密碼。</p>
+                    </div>
+
+                    <div class="account-security">
+                        <div>
+                            <strong>登入密碼</strong>
+                            <p>定期更新密碼有助於保護帳號安全。</p>
+                        </div>
+                        <button type="button" class="secondary-button" id="changeAdminPassword">變更密碼</button>
+                    </div>
+
+                    <form id="changeAdminPasswordForm" style="display:none;">
+                        <div class="form-group">
+                            <label for="adminCurrentPassword">目前密碼</label>
+                            <input type="password" id="adminCurrentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminNewPassword">新密碼</label>
+                            <input type="password" id="adminNewPassword" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminConfirmPassword">確認新密碼</label>
+                            <input type="password" id="adminConfirmPassword" required minlength="8">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="primary-button">確認變更</button>
+                            <button type="button" class="secondary-button" id="cancelAdminPassword">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- 新增／修改課程 Modal -->
+    <div class="modal-overlay" id="courseModal" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 id="courseModalTitle">新增課程</h2>
+                <button type="button" class="modal-close" data-close-modal="courseModal" aria-label="關閉">×</button>
+            </div>
+            <form id="courseForm">
+                <div class="modal-body">
+                    <input type="hidden" id="courseEditId">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="courseCode">課號 <span class="required-mark">*</span></label>
+                            <input type="text" id="courseCode" required placeholder="例如 IM2001">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseName">課程名稱 <span class="required-mark">*</span></label>
+                            <input type="text" id="courseName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseSemester">學期 <span class="required-mark">*</span></label>
+                            <select id="courseSemester" required>
+                                <option value="115-1">115-1</option>
+                                <option value="114-2">114-2</option>
+                                <option value="114-1">114-1</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDepartment">開課系所 <span class="required-mark">*</span></label>
+                            <select id="courseDepartment" required>
+                                <option>資訊管理系</option>
+                                <option>健康事業管理系</option>
+                                <option>護理系</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseClassName">開課班級 <span class="required-mark">*</span></label>
+                            <input type="text" id="courseClassName" required placeholder="例如 資管二A">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseTeacher">授課教師 <span class="required-mark">*</span></label>
+                            <input type="text" id="courseTeacher" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseCredits">學分 <span class="required-mark">*</span></label>
+                            <input type="number" id="courseCredits" min="0" max="6" step="0.5" required value="3">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseType">必選修 <span class="required-mark">*</span></label>
+                            <select id="courseType" required>
+                                <option>必修</option>
+                                <option>選修</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDay">星期 <span class="required-mark">*</span></label>
+                            <select id="courseDay" required>
+                                <option>星期一</option>
+                                <option>星期二</option>
+                                <option>星期三</option>
+                                <option>星期四</option>
+                                <option>星期五</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>節次 <span class="required-mark">*</span></label>
+                            <div class="period-row">
+                                <select id="coursePeriodStart" required>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                                <span>至</span>
+                                <select id="coursePeriodEnd" required>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4" selected>4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseClassroom">教室 <span class="required-mark">*</span></label>
+                            <input type="text" id="courseClassroom" required placeholder="例如 G202">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseStudents">修課人數</label>
+                            <input type="number" id="courseStudents" min="0" value="40">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="courseSummary">課程摘要</label>
+                            <textarea id="courseSummary" placeholder="選填"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-button" data-close-modal="courseModal">取消</button>
+                    <button type="submit" class="primary-button">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 刪除課程確認 -->
+    <div class="modal-overlay" id="deleteCourseModal" role="dialog" aria-modal="true" aria-labelledby="deleteCourseTitle">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-header">
+                <h2 id="deleteCourseTitle">刪除課程</h2>
+                <button type="button" class="modal-close" data-close-modal="deleteCourseModal" aria-label="關閉">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-danger-text">
+                    確定要刪除以下課程嗎？刪除後無法復原，學生預選清單中的同一門課程也會一併移除。
+                </p>
+                <p class="modal-danger-text" id="deleteCourseDetail"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="secondary-button" data-close-modal="deleteCourseModal">取消</button>
+                <button type="button" class="danger-button" id="confirmDeleteCourse">確定刪除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增／修改帳號 Modal -->
+    <div class="modal-overlay" id="userModal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 id="userModalTitle">新增帳號</h2>
+                <button type="button" class="modal-close" data-close-modal="userModal" aria-label="關閉">×</button>
+            </div>
+            <form id="userForm">
+                <div class="modal-body">
+                    <input type="hidden" id="userEditId">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="userAccount">帳號 <span class="required-mark">*</span></label>
+                            <input type="text" id="userAccount" required placeholder="學號或教職員代號">
+                        </div>
+                        <div class="form-group">
+                            <label for="userName">姓名 <span class="required-mark">*</span></label>
+                            <input type="text" id="userName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userRole">身分 <span class="required-mark">*</span></label>
+                            <select id="userRole" required>
+                                <option value="student">學生</option>
+                                <option value="admin">管理者</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="userDepartment">系所／單位</label>
+                            <input type="text" id="userDepartment" placeholder="例如 資訊管理系">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="userEmail">電子郵件 <span class="required-mark">*</span></label>
+                            <input type="email" id="userEmail" required>
+                        </div>
+                        <div class="form-group" id="userPasswordGroup">
+                            <label for="userPassword">初始密碼 <span class="required-mark">*</span></label>
+                            <input type="password" id="userPassword" minlength="8" placeholder="8–20 碼，含英文與數字">
+                        </div>
+                        <div class="form-group">
+                            <label for="userStatus">狀態</label>
+                            <select id="userStatus">
+                                <option value="active">啟用</option>
+                                <option value="disabled">停用</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-button" data-close-modal="userModal">取消</button>
+                    <button type="submit" class="primary-button">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="appToast" role="status" aria-live="polite"></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

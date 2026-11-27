@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生首頁｜北護課程查詢系統</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="student-page">
+
+    <!-- 頂部導覽列 -->
+    <header class="topbar" role="banner">
+
+        <div class="topbar-logo">
+            北護課程查詢系統
+        </div>
+
+        <div class="topbar-user">
+            <span>學生</span>
+            <span class="user-name">使用者</span>
+            <a href="index.html">登出</a>
+        </div>
+
+    </header>
+
+
+    <!-- 系統主要版面 -->
+    <div class="dashboard">
+
+        <!-- 左側選單 -->
+        <aside class="sidebar">
+
+            <div class="sidebar-title">
+                學生功能
+            </div>
+
+            <nav class="sidebar-menu" aria-label="學生功能選單">
+                
+				<button class="menu-item active" data-target="course-search">
+					課程查詢
+				</button>
+
+				<button class="menu-item" data-target="course-compare">
+					課程比較
+				</button>
+
+				<button class="menu-item" data-target="course-schedule">
+					預選課模擬
+				</button>
+
+				<button class="menu-item" data-target="account">
+					個人帳號
+				</button>
+				
+            </nav>
+
+        </aside>
+
+
+        <!-- 右側內容區 -->
+        <main class="main-content">
+
+            <!-- 頁面標題 -->
+            <div class="page-heading">
+
+                <div>
+                    <p class="page-breadcrumb" id="pageBreadcrumb">學生端 / 課程查詢</p>
+                    <h1 id="pageTitle">課程查詢</h1>
+                </div>
+
+                <div class="semester-label">
+                    115-1 學期
+                </div>
+
+            </div>
+
+
+            <!-- 課程查詢頁 -->
+            <section id="course-search" class="content-section active">
+
+                <!-- 查詢條件 -->
+                <div class="content-card">
+
+                    <div class="card-heading">
+                        <h2>查詢條件</h2>
+                        <p>依照條件搜尋課程</p>
+                    </div>
+
+                    <div class="search-grid">
+
+                        <div class="search-field">
+                            <label>學期</label>
+                            <select id="filterSemester">
+                                <option>115-1</option>
+                                <option>114-2</option>
+                                <option>114-1</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field">
+                            <label>開課系所</label>
+                            <select id="filterDepartment">
+                                <option>全部系所</option>
+                                <option>資訊管理系</option>
+                                <option>健康事業管理系</option>
+                                <option>護理系</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field">
+                            <label>年級</label>
+                            <select id="filterGrade">
+                                <option>全部年級</option>
+                                <option>一年級</option>
+                                <option>二年級</option>
+                                <option>三年級</option>
+                                <option>四年級</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field">
+                            <label>必選修</label>
+                            <select id="filterType">
+                                <option>全部</option>
+                                <option>必修</option>
+                                <option>選修</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field">
+                            <label>部別</label>
+                            <select id="filterProgram">
+                                <option>全部</option>
+                                <option>日間部</option>
+                                <option>進修部</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field">
+                            <label>星期</label>
+                            <select id="filterDay">
+                                <option>全部星期</option>
+                                <option>星期一</option>
+                                <option>星期二</option>
+                                <option>星期三</option>
+                                <option>星期四</option>
+                                <option>星期五</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field keyword-field">
+                            <label>關鍵字</label>
+                            <input type="text" id="filterKeyword" placeholder="課程名稱或授課教師">
+                        </div>
+
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="button" class="primary-button" id="searchCourses">查詢</button>
+                        <button type="button" class="secondary-button" id="clearSearch">清除</button>
+                    </div>
+
+                </div>
+
+
+                <!-- 查詢結果 -->
+                <div class="content-card">
+
+                    <div class="card-heading result-heading">
+
+                        <div>
+                            <h2>課程列表</h2>
+                            <p id="resultCount" aria-live="polite">查詢結果：共 0 筆課程</p>
+                        </div>
+
+                        <button type="button" class="secondary-button" id="startCompare">
+                            開始比較
+                        </button>
+
+                    </div>
+
+
+                    <!-- 課程表格 -->
+                    <div class="table-wrapper">
+
+                        <table class="course-table">
+
+                            <thead>
+                                <tr>
+                                    <th>比較</th>
+                                    <th>課程名稱</th>
+                                    <th>授課教師</th>
+                                    <th>開課班級</th>
+                                    <th>學分</th>
+                                    <th>必選修</th>
+                                    <th>星期／節次</th>
+                                    <th>教室</th>
+                                    <th>人數</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="courseTableBody"></tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- 分頁 -->
+                    <div class="pagination" id="coursePagination">
+                        <span id="paginationInfo">第 1 頁 / 共 1 頁</span>
+                        <div>
+                            <button type="button" class="secondary-button" id="prevPage">上一頁</button>
+                            <span id="pageButtons"></span>
+                            <button type="button" class="secondary-button" id="nextPage">下一頁</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- 課程比較 -->
+            <section id="course-compare" class="content-section">
+
+                <div class="section-header">
+                    <p>比較已選擇課程的基本資訊、學分與上課時間，最多可同時比較三門課程。</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-heading result-heading">
+                        <div>
+                            <h2>課程比較結果</h2>
+                            <p id="compareCount">目前選擇 0 / 3 門課程</p>
+                        </div>
+                        <div class="search-actions">
+                            <button type="button" class="secondary-button" id="backToSearch">返回課程查詢</button>
+                            <button type="button" class="secondary-button" id="clearCompare">清空比較</button>
+                        </div>
+                    </div>
+
+                    <div id="compareCourseList" class="table-wrapper">
+                        <p class="empty-result">尚未選擇課程，請返回課程查詢頁勾選課程。</p>
+                    </div>
+                </div>
+
+            </section>
+
+
+			<!-- 預選課模擬 -->
+			<section id="course-schedule" class="content-section">
+
+				<div class="section-header">
+					<p>管理預選課程、查看總學分及檢查每週上課時間。</p>
+				</div>
+
+				<!-- 統計資訊 -->
+				<div class="schedule-summary">
+
+					<div class="summary-card">
+						<h3>已選課程</h3>
+						<p id="selectedCourseCount">0 門</p>
+					</div>
+
+					<div class="summary-card">
+						<h3>總學分</h3>
+						<p id="totalCredits">0 學分</p>
+					</div>
+
+					<div class="summary-card">
+						<h3>衝堂課程</h3>
+						<p id="conflictCount">0 門</p>
+					</div>
+
+				</div>
+
+				<!-- 預選課程清單 -->
+				<div class="content-card">
+
+					<div class="card-heading result-heading">
+						<div>
+							<h2>我的預選課程</h2>
+							<p>查看已加入的課程及其基本資訊。</p>
+						</div>
+
+						<button type="button"
+								class="secondary-button"
+								id="clearSchedule">
+							清空預選
+						</button>
+					</div>
+
+					<div class="table-wrapper">
+
+						<table class="course-table">
+
+							<thead>
+								<tr>
+									<th>課程名稱</th>
+									<th>授課教師</th>
+									<th>學分</th>
+									<th>上課時間</th>
+									<th>教室</th>
+									<th>衝堂狀態</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+
+							<tbody id="selectedCourseTable">
+
+								<tr>
+									<td colspan="7" class="empty-result">
+										尚未加入任何預選課程
+									</td>
+								</tr>
+
+							</tbody>
+
+						</table>
+
+					</div>
+
+				</div>
+
+				<!-- 每週課表 -->
+				<div class="content-card">
+
+					<div class="card-heading">
+						<div>
+							<h2>每週課表</h2>
+							<p>依照預選課程自動排列每週上課時間。</p>
+						</div>
+					</div>
+
+					<div class="table-wrapper">
+
+						<table class="course-table weekly-schedule">
+
+							<thead>
+								<tr>
+									<th>節次</th>
+									<th>星期一</th>
+									<th>星期二</th>
+									<th>星期三</th>
+									<th>星期四</th>
+									<th>星期五</th>
+								</tr>
+							</thead>
+
+							<tbody id="weeklyScheduleBody">
+
+								<tr>
+									<td colspan="6" class="empty-result">
+										尚未加入課程，無法產生課表
+									</td>
+								</tr>
+
+							</tbody>
+
+						</table>
+
+					</div>
+
+				</div>
+
+			</section>
+
+			
+			<!-- 個人帳號 -->
+			<section id="account" class="content-section">
+
+				<div class="section-header">
+					<p>查看及管理個人帳號資料。</p>
+				</div>
+
+				<!-- 基本資料 -->
+				<div class="content-card">
+
+					<div class="card-heading">
+						<div>
+							<h2>個人基本資料</h2>
+							<p>查看目前登入學生的基本資訊。</p>
+						</div>
+					</div>
+
+					<div id="accountInfo" class="account-card">
+
+						<div class="account-info-item">
+							<span>姓名</span>
+							<strong id="displayName">王小明</strong>
+						</div>
+
+						<div class="account-info-item">
+							<span>學號</span>
+							<strong id="displayStudentId">00000001</strong>
+						</div>
+
+						<div class="account-info-item">
+							<span>系所</span>
+							<strong id="displayDepartment">資訊管理系</strong>
+						</div>
+
+						<div class="account-info-item">
+							<span>電子郵件</span>
+							<strong id="displayEmail">student@example.com</strong>
+						</div>
+
+						<button type="button" class="primary-button" id="editAccount">
+							修改個人資料
+						</button>
+
+					</div>
+
+					<!-- 修改個人資料表單 -->
+					<form id="editAccountForm" style="display:none;">
+
+						<div class="form-group">
+							<label for="editName">姓名</label>
+							<input type="text" id="editName" required>
+						</div>
+
+						<div class="form-group">
+							<label for="editEmail">電子郵件</label>
+							<input type="email" id="editEmail" required>
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" class="primary-button">
+								儲存修改
+							</button>
+
+							<button type="button" class="secondary-button" id="cancelEdit">
+								取消
+							</button>
+						</div>
+
+					</form>
+
+				</div>
+
+				<!-- 密碼管理 -->
+				<div class="content-card">
+
+					<div class="card-heading">
+						<div>
+							<h2>帳號安全</h2>
+							<p>管理目前帳號的登入密碼。</p>
+						</div>
+					</div>
+
+					<div class="account-security">
+
+						<div>
+							<strong>登入密碼</strong>
+							<p>定期更新密碼有助於保護帳號安全。</p>
+						</div>
+
+						<button type="button" class="secondary-button" id="changePassword">
+							變更密碼
+						</button>
+
+					</div>
+
+					<!-- 變更密碼表單 -->
+					<form id="changePasswordForm" style="display:none;">
+
+						<div class="form-group">
+							<label for="currentPassword">目前密碼</label>
+							<input type="password" id="currentPassword" required>
+						</div>
+
+						<div class="form-group">
+							<label for="newPassword">新密碼</label>
+							<input type="password" id="newPassword" required minlength="6">
+						</div>
+
+						<div class="form-group">
+							<label for="confirmPassword">確認新密碼</label>
+							<input type="password" id="confirmPassword" required minlength="6">
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" class="primary-button">
+								確認變更
+							</button>
+
+							<button type="button" class="secondary-button" id="cancelPassword">
+								取消
+							</button>
+						</div>
+
+					</form>
+
+				</div>
+
+			</section>
+
+        </main>
+
+    </div>
+
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1348 @@
+:root {
+    /* 主色 */
+    --color-primary: #3b6fd9;
+    --color-primary-hover: #2f5bb8;
+    --color-primary-soft: #e8f0fc;
+    --color-primary-muted: #d6e4f8;
+
+    /* 中性色 */
+    --color-bg: #f5f7fa;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+    --color-border-strong: #cbd5e1;
+    --color-text: #1e293b;
+    --color-text-secondary: #64748b;
+    --color-text-muted: #94a3b8;
+
+    /* 語意色 */
+    --color-danger: #dc2626;
+    --color-danger-soft: #fef2f2;
+    --color-success: #059669;
+    --color-success-soft: #ecfdf5;
+    --color-warning: #d97706;
+
+    /* 版面 */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+    --header-height: 64px;
+    --sidebar-width: 220px;
+    --focus-ring: 0 0 0 3px rgba(59, 111, 217, 0.28);
+
+    --font-sans: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC",
+        "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+a {
+    color: var(--color-primary);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+/* 鍵盤焦點：所有可互動元素統一可見 */
+:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+
+/* ========================================
+   登入頁
+======================================== */
+
+.site-header {
+    height: var(--header-height);
+    background-color: var(--color-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+}
+
+.header-logo {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.login-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    box-shadow: var(--shadow-md);
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.login-title h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: var(--color-text);
+}
+
+.login-title p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 6px;
+}
+
+.form-group input {
+    width: 100%;
+    height: 44px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    font-size: 15px;
+    color: var(--color-text);
+    background: var(--color-surface);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.captcha-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.captcha-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.captcha-code {
+    width: 96px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-soft);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--color-text);
+    user-select: none;
+}
+
+.refresh-button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--color-text-secondary);
+    transition: background 0.15s ease;
+}
+
+.refresh-button:hover {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 22px;
+    color: var(--color-text-secondary);
+}
+
+.remember-account {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.login-options a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.login-options a:hover {
+    text-decoration: underline;
+}
+
+.login-button {
+    width: 100%;
+    height: 46px;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.login-button:hover {
+    background: var(--color-primary-hover);
+}
+
+.login-message {
+    text-align: center;
+    font-size: 14px;
+    margin: 14px 0 0;
+    color: var(--color-danger);
+    min-height: 1.2em;
+}
+
+.site-footer {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+
+/* ========================================
+   學生端頂欄
+======================================== */
+
+.student-page {
+    background-color: var(--color-bg);
+}
+
+.topbar {
+    height: var(--header-height);
+    background-color: var(--color-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-logo {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+}
+
+.topbar-user .user-name {
+    font-weight: 600;
+}
+
+.topbar-user a {
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    transition: background 0.15s ease;
+}
+
+.topbar-user a:hover {
+    background: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
+}
+
+
+/* ========================================
+   版面：側欄 + 主內容
+======================================== */
+
+.dashboard {
+    display: flex;
+    min-height: calc(100vh - var(--header-height));
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+}
+
+.sidebar-title {
+    padding: 22px 20px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px 16px;
+    gap: 2px;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid transparent;
+    background: transparent;
+    color: var(--color-text-secondary);
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    appearance: none;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.menu-item:hover {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.menu-item.active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-weight: 700;
+    border-left-color: var(--color-primary);
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 40px;
+}
+
+
+/* ========================================
+   頁面標題
+======================================== */
+
+.page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.page-breadcrumb {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin: 0 0 6px;
+}
+
+.page-heading h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-text);
+}
+
+.semester-label {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+
+/* ========================================
+   內容卡片
+======================================== */
+
+.content-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-heading {
+    margin-bottom: 18px;
+}
+
+.card-heading h2 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--color-text);
+}
+
+.card-heading p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.result-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.section-header {
+    margin-bottom: 16px;
+}
+
+.section-header p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+
+/* ========================================
+   查詢條件
+======================================== */
+
+.search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 18px;
+}
+
+.search-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--color-text);
+}
+
+.search-field input,
+.search-field select {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-field input:focus,
+.search-field select:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
+/* 關鍵字欄位跨滿整列，符合搜尋習慣 */
+.search-field.keyword-field {
+    grid-column: 1 / -1;
+}
+
+.search-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+/* ========================================
+   按鈕（統一層級）
+======================================== */
+
+.primary-button,
+.secondary-button,
+.small-button,
+.page-number,
+.btn-primary,
+.btn-secondary,
+.login-button {
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.primary-button,
+.btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+    border: 1px solid var(--color-primary);
+    padding: 10px 20px;
+}
+
+.primary-button:hover,
+.btn-primary:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
+.secondary-button,
+.btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-strong);
+    padding: 9px 16px;
+}
+
+.secondary-button:hover,
+.btn-secondary:hover {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    border-color: var(--color-primary-muted);
+}
+
+.small-button {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-muted);
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.small-button:hover {
+    background: var(--color-primary-muted);
+}
+
+.small-button.is-selected,
+.small-button[data-selected="true"] {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+    border-color: #fecaca;
+}
+
+.page-number {
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-strong);
+    padding: 8px 12px;
+    min-width: 36px;
+}
+
+.page-number.active,
+.page-number:hover {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+button:disabled,
+.secondary-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+
+/* ========================================
+   表格
+======================================== */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-sm);
+}
+
+.course-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.course-table th {
+    background: #f1f5f9;
+    color: var(--color-text-secondary);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.course-table th,
+.course-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+
+.course-table tbody tr {
+    transition: background 0.1s ease;
+}
+
+.course-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.course-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.course-table td a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.course-table td a:hover {
+    text-decoration: underline;
+}
+
+/* 空狀態 */
+.empty-result {
+    text-align: center !important;
+    color: var(--color-text-muted) !important;
+    padding: 36px 16px !important;
+    white-space: normal !important;
+    font-size: 14px !important;
+}
+
+/* 狀態標籤 */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.is-ok {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+}
+
+.status-badge.is-conflict {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+}
+
+.schedule-cell-ok {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.schedule-cell-conflict {
+    color: var(--color-danger);
+    font-weight: 600;
+}
+
+.weekly-schedule td {
+    min-width: 100px;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.weekly-schedule th:first-child,
+.weekly-schedule td:first-child {
+    min-width: 72px;
+    font-weight: 600;
+    background: #f8fafc;
+}
+
+
+/* ========================================
+   分頁
+======================================== */
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.pagination > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+
+/* ========================================
+   課程比較
+======================================== */
+
+.compare-course-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.compare-course-card {
+    padding: 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.compare-course-card h3 {
+    margin-top: 0;
+    color: var(--color-text);
+    font-size: 16px;
+}
+
+.compare-course-card p {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+.empty-course {
+    border: 2px dashed var(--color-border-strong);
+    color: var(--color-text-muted);
+    background: #fafbfc;
+}
+
+
+/* ========================================
+   預選課模擬
+======================================== */
+
+.schedule-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    padding: 18px 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.summary-card h3 {
+    margin: 0 0 8px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.summary-card p {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.summary-card.is-warning p {
+    color: var(--color-danger);
+}
+
+
+/* ========================================
+   個人帳號
+======================================== */
+
+.account-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.account-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 14px;
+}
+
+.account-info-item:last-of-type {
+    margin-bottom: 8px;
+}
+
+.account-info-item span {
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.account-info-item strong {
+    color: var(--color-text);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-all;
+}
+
+.account-security {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.account-security strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-text);
+}
+
+.account-security p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+#editAccountForm,
+#changePasswordForm {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+
+/* ========================================
+   功能區塊切換
+======================================== */
+
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+
+/* ========================================
+   RWD
+======================================== */
+
+@media (max-width: 900px) {
+    .sidebar {
+        width: 190px;
+    }
+
+    .main-content {
+        padding: 22px 18px;
+    }
+
+    .search-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .compare-course-list,
+    .schedule-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-header,
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .topbar-logo {
+        font-size: 15px;
+    }
+
+    .topbar-user {
+        gap: 8px;
+        font-size: 12px;
+    }
+
+    .topbar-user a {
+        padding: 4px 8px;
+    }
+
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        position: sticky;
+        top: var(--header-height);
+        z-index: 90;
+        background: var(--color-surface);
+    }
+
+    .sidebar-title {
+        display: none;
+    }
+
+    .sidebar-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 0 8px;
+        gap: 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .menu-item {
+        width: auto;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 14px 16px;
+        border-left: none;
+        border-radius: 0;
+        border-bottom: 3px solid transparent;
+    }
+
+    .menu-item.active {
+        border-left: none;
+        border-bottom-color: var(--color-primary);
+    }
+
+    .main-content {
+        padding: 16px 12px 32px;
+    }
+
+    .page-heading {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .page-heading h1 {
+        font-size: 20px;
+    }
+
+    .content-card {
+        padding: 16px 14px;
+    }
+
+    .search-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-heading {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pagination {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .login-card {
+        padding: 28px 20px;
+    }
+
+    .login-title h1 {
+        font-size: 22px;
+    }
+
+    .account-info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .account-info-item strong {
+        text-align: left;
+    }
+}
+
+
+/* ========================================
+   Modal 對話框（新增／修改／刪除確認）
+======================================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.modal-overlay.is-open {
+    display: flex;
+}
+
+.modal-dialog {
+    width: 100%;
+    max-width: 640px;
+    max-height: calc(100vh - 40px);
+    overflow: auto;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+.modal-dialog.modal-sm {
+    max-width: 420px;
+}
+
+.modal-dialog.modal-lg {
+    max-width: 860px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.modal-body {
+    padding: 20px 22px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 22px 20px;
+    border-top: 1px solid var(--color-border);
+}
+
+.modal-danger-text {
+    margin: 0 0 8px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.modal-danger-text strong {
+    color: var(--color-text);
+}
+
+.required-mark {
+    color: var(--color-danger);
+    margin-left: 2px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 16px;
+}
+
+.form-grid .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group textarea {
+    width: 100%;
+    min-height: 88px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+    color: var(--color-text);
+}
+
+.form-group textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
+.form-group select {
+    width: 100%;
+    height: 44px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 14px;
+}
+
+.period-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.period-row select {
+    flex: 1;
+}
+
+.period-row span {
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+.danger-button {
+    background: var(--color-danger);
+    color: #fff;
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.danger-button:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+
+.small-button.is-danger {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+    border-color: #fecaca;
+}
+
+.small-button.is-danger:hover {
+    background: #fee2e2;
+}
+
+.toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 300;
+    min-width: 240px;
+    max-width: 360px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: var(--color-text);
+    color: #fff;
+    font-size: 14px;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.is-success {
+    background: var(--color-success);
+}
+
+.toast.is-error {
+    background: var(--color-danger);
+}
+
+/* 匯入區 */
+.import-dropzone {
+    border: 2px dashed var(--color-border-strong);
+    border-radius: var(--radius-md);
+    padding: 28px 20px;
+    text-align: center;
+    background: #fafbfc;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+.import-dropzone strong {
+    color: var(--color-text);
+}
+
+.import-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.import-stat {
+    padding: 14px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+.import-stat span {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    margin-bottom: 4px;
+}
+
+.import-stat strong {
+    font-size: 20px;
+    color: var(--color-text);
+}
+
+.import-stat.is-error strong {
+    color: var(--color-danger);
+}
+
+.import-stat.is-ok strong {
+    color: var(--color-success);
+}
+
+.row-error {
+    background: var(--color-danger-soft) !important;
+}
+
+.row-disabled {
+    opacity: 0.55;
+}
+
+.row-disabled td {
+    color: var(--color-text-muted);
+}
+
+.file-name-label {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .import-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-dialog {
+        max-height: calc(100vh - 24px);
+    }
+}

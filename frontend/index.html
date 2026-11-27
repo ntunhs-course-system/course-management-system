@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北護課程查詢系統</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-logo">北護課程查詢系統</div>
+    </header>
+
+    <main class="login-container">
+        <div class="login-card">
+            <div class="login-title">
+                <h1>使用者登入</h1>
+                <p>請輸入帳號與密碼以登入系統</p>
+            </div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="account">帳號</label>
+                    <input
+                        type="text"
+                        id="account"
+                        name="account"
+                        autocomplete="username"
+                        placeholder="請輸入學號或教職員代號"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="請輸入密碼"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="captcha">驗證碼</label>
+                    <div class="captcha-row">
+                        <input
+                            type="text"
+                            id="captcha"
+                            name="captcha"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            placeholder="請輸入驗證碼"
+                            required
+                            aria-describedby="captchaCode"
+                        >
+                        <div class="captcha-code" id="captchaCode" aria-live="polite" title="驗證碼">
+                            4827
+                        </div>
+                        <button
+                            type="button"
+                            class="refresh-button"
+                            id="refreshCaptcha"
+                            aria-label="重新產生驗證碼"
+                            title="重新產生驗證碼"
+                        >
+                            ↻
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <label class="remember-account">
+                        <input type="checkbox" id="rememberAccount">
+                        記住帳號
+                    </label>
+                    <a href="#" id="forgotPassword">忘記密碼？</a>
+                </div>
+
+                <button type="submit" class="login-button">登入</button>
+                <p class="login-message" id="loginMessage" role="alert"></p>
+            </form>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        國立臺北護理健康大學｜課程查詢系統
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
