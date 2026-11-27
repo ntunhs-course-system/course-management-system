@@ -26,7 +26,8 @@ appDb.exec(`
     role                  TEXT NOT NULL CHECK (role IN ('student', 'admin')),
     is_active             INTEGER NOT NULL DEFAULT 1,
     must_change_password  INTEGER NOT NULL DEFAULT 0,
-    created_at            TEXT NOT NULL DEFAULT (datetime('now'))
+    -- 台灣時間，和 database/init_app_db.py 一樣
+    created_at            TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
 `);
 

@@ -274,7 +274,7 @@
 }
 ```
 
-`created_at` 是 UTC 時間，顯示前要轉成台灣時間（+8 小時）。
+`created_at` 是台灣時間（`YYYY-MM-DD HH:MM:SS`），可以直接顯示。
 
 ### `GET /api/admin/users` 帳號清單
 
