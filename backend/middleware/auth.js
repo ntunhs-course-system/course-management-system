@@ -7,6 +7,7 @@ const BCRYPT_ROUNDS = 12;
 // bcrypt 只看密碼前 72 bytes，超過的部分會被忽略（中文一個字 3 bytes）
 const MAX_USERNAME_LENGTH = 50;
 const MAX_PASSWORD_BYTES = 72;
+const MIN_PASSWORD_LENGTH = 8;
 
 function isPasswordTooLong(password) {
   return Buffer.byteLength(password, 'utf8') > MAX_PASSWORD_BYTES;
@@ -60,4 +61,5 @@ module.exports = {
   BCRYPT_ROUNDS,
   MAX_USERNAME_LENGTH,
   MAX_PASSWORD_BYTES,
+  MIN_PASSWORD_LENGTH,
 };

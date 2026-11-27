@@ -2,7 +2,7 @@
 require('dotenv').config({ path: require('node:path').join(__dirname, '..', '.env'), quiet: true });
 
 const { appDb } = require('../db');
-const { hashPassword, isPasswordTooLong } = require('../middleware/auth');
+const { hashPassword, isPasswordTooLong, MIN_PASSWORD_LENGTH } = require('../middleware/auth');
 
 const accounts = [
   { username: process.env.ADMIN_USERNAME || 'admin', password: process.env.ADMIN_PASSWORD, role: 'admin' },
@@ -22,7 +22,7 @@ async function main() {
       console.log(`已存在，略過：${a.username}`);
       continue;
     }
-    if (!a.password || a.password.length < 8 || isPasswordTooLong(a.password)) {
+    if (!a.password || [...a.password].length < MIN_PASSWORD_LENGTH || isPasswordTooLong(a.password)) {
       console.error(`略過 ${a.username}：密碼要 8 個字以上、72 bytes 以內`);
       process.exitCode = 1;
       continue;
