@@ -9,6 +9,9 @@ const ERROR_CODES = {
   INVALID_JSON: 'JSON 格式錯誤',
   WRONG_PASSWORD: '目前的密碼錯誤',
   WEAK_PASSWORD: '新密碼不符合規定',
+  CANNOT_MODIFY_SELF: '不能停用自己或重設自己的密碼，自己的密碼請到「變更密碼」修改',
+  // 409 資料衝突
+  USERNAME_TAKEN: '這個帳號已經有人使用',
   // 401 沒登入
   INVALID_CREDENTIALS: '帳號或密碼錯誤',
   NOT_LOGGED_IN: '請先登入',

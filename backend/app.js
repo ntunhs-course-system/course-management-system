@@ -1,7 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
-const { loginRequired } = require('./middleware/auth');
+const { loginRequired, adminOnly } = require('./middleware/auth');
 const { sendError } = require('./utils/errors');
 const { appDb } = require('./db');
 const { SqliteSessionStore } = require('./session-store');
@@ -38,6 +38,7 @@ function createApp() {
   app.use('/api/auth', require('./routes/auth'));
   // 依 API 指南，查課程要先登入
   app.use('/api/courses', loginRequired, require('./routes/courses'));
+  app.use('/api/admin/users', loginRequired, adminOnly, require('./routes/admin-users'));
 
   app.use('/api', (req, res) => sendError(res, 404, 'API_NOT_FOUND'));
 
