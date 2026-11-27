@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# 資料庫：帳號、預選與管理者異動資料，不要提交（見 database/README-TEAM.md）
+backend/data/app.db
+backend/data/app.db-wal
+backend/data/app.db-shm
+database/app.db
+
+# 資料庫備份與重建暫存檔
+database/courses.db.bak
+database/courses.new.db

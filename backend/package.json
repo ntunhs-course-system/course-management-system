@@ -1,0 +1,24 @@
+{
+  "name": "course-management-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "北護多課程整合與預選課模擬系統：後端 API（Express）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed:users": "node scripts/seed-users.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0"
+  }
+}
