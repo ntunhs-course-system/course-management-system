@@ -101,6 +101,33 @@ const getTimeslots = courseDb.prepare(
     WHERE course_id = ? ORDER BY weekday, start_period`
 );
 
+// 課程比較：GET /api/courses/compare?ids=A,B,C（1～5 門，依傳入順序回傳）
+// 找不到的課號放在 not_found，不會整個失敗（例如課程被管理者刪掉了）
+const MAX_COMPARE = 5;
+const COURSE_ID_RE = /^[A-Za-z0-9_-]{1,32}$/;
+
+router.get('/compare', (req, res) => {
+  if (typeof req.query.ids !== 'string' || req.query.ids.trim() === '') {
+    return sendError(res, 400, 'VALIDATION_ERROR', '請提供 ids，例如 ?ids=A,B,C');
+  }
+  const ids = [...new Set(req.query.ids.split(',').map((s) => s.trim()).filter(Boolean))];
+  if (ids.length === 0 || ids.length > MAX_COMPARE) {
+    return sendError(res, 400, 'VALIDATION_ERROR', `一次可以比較 1～${MAX_COMPARE} 門課`);
+  }
+  if (!ids.every((id) => COURSE_ID_RE.test(id))) {
+    return sendError(res, 400, 'VALIDATION_ERROR', '課程 id 格式錯誤');
+  }
+
+  const items = [];
+  const notFound = [];
+  for (const id of ids) {
+    const course = getCourse.get(id);
+    if (course) items.push({ ...course, timeslots: getTimeslots.all(id) });
+    else notFound.push(id);
+  }
+  res.json({ items, not_found: notFound });
+});
+
 router.get('/:id', (req, res) => {
   const course = getCourse.get(req.params.id);
   if (!course) return sendError(res, 404, 'NOT_FOUND', '找不到這門課');

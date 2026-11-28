@@ -212,6 +212,40 @@ test('課程查詢：翻頁不會重複或漏掉課程', async () => {
   assert.equal(seen.size, total);
 });
 
+test('課程比較：依順序回傳完整資料，找不到的放 not_found', async () => {
+  const list = await get('/api/courses?semester=115-1&page_size=3');
+  const [a, b, c] = list.body.items.map((x) => x.id);
+
+  const r = await get(`/api/courses/compare?ids=${c},${a},${b},${a}`);
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.body.items.map((x) => x.id), [c, a, b], '依傳入順序、重複的只算一次');
+  assert.ok(r.body.items.every((x) => Array.isArray(x.timeslots) && 'summary' in x));
+  assert.deepEqual(r.body.not_found, []);
+
+  const missing = await get(`/api/courses/compare?ids=${a},nope123`);
+  assert.equal(missing.status, 200);
+  assert.deepEqual(missing.body.not_found, ['nope123']);
+
+  const noLogin = await call('GET', `/api/courses/compare?ids=${a}`);
+  assert.equal(noLogin.status, 401);
+  assert.equal(noLogin.body.error.code, 'NOT_LOGGED_IN');
+});
+
+test('課程比較：參數錯誤回 400', async () => {
+  for (const url of [
+    '/api/courses/compare',
+    '/api/courses/compare?ids=',
+    '/api/courses/compare?ids=,,',
+    '/api/courses/compare?ids=1,2,3,4,5,6',
+    `/api/courses/compare?ids=${encodeURIComponent("1' OR '1")}`,
+    '/api/courses/compare?ids=a&ids=b',
+  ]) {
+    const r = await get(url);
+    assert.equal(r.status, 400, url);
+    assert.equal(r.body.error.code, 'VALIDATION_ERROR', url);
+  }
+});
+
 // 會把 admin1 鎖 15 分鐘，所以放最後
 test('同一個帳號失敗超過 5 次會被擋，其他帳號不受影響', async () => {
   let last;
