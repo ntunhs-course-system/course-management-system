@@ -7,6 +7,8 @@ const ERROR_CODES = {
   // 400 請求內容有問題
   VALIDATION_ERROR: '請求參數格式錯誤',
   INVALID_JSON: 'JSON 格式錯誤',
+  WRONG_PASSWORD: '目前的密碼錯誤',
+  WEAK_PASSWORD: '新密碼不符合規定',
   // 401 沒登入
   INVALID_CREDENTIALS: '帳號或密碼錯誤',
   NOT_LOGGED_IN: '請先登入',

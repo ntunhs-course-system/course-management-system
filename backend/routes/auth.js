@@ -2,7 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const { appDb } = require('../db');
-const { loginRequired, isPasswordTooLong, MAX_USERNAME_LENGTH } = require('../middleware/auth');
+const {
+  loginRequired, hashPassword, isPasswordTooLong, MAX_USERNAME_LENGTH, MIN_PASSWORD_LENGTH,
+} = require('../middleware/auth');
 
 const { sendError } = require('../utils/errors');
 
@@ -10,6 +12,7 @@ const { sendError } = require('../utils/errors');
 //   POST /api/auth/login
 //   POST /api/auth/logout
 //   GET  /api/auth/me
+//   PUT  /api/auth/password
 const router = express.Router();
 
 // 被擋時回傳 retry_after（秒），前端可以顯示倒數
@@ -103,6 +106,70 @@ router.post('/logout', (req, res, next) => {
 router.get('/me', loginRequired, (req, res) => {
   const { id, username, role, must_change_password } = req.user;
   res.json({ id, username, role, must_change_password: Boolean(must_change_password) });
+});
+
+// 舊密碼打錯也要計次：有人借用沒登出的電腦，不能一直猜原本的密碼
+// 用帳號計次（已經登入，知道是誰），成功不算
+const changePasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  skipSuccessfulRequests: true,
+  keyGenerator: (req) => `user:${req.user.id}`,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: lockedHandler('TOO_MANY_REQUESTS'),
+});
+
+function validatePasswordBody(req, res, next) {
+  const { current_password: current, new_password: newPassword } = req.body || {};
+  if (typeof current !== 'string' || typeof newPassword !== 'string' || !current || !newPassword) {
+    return sendError(res, 400, 'VALIDATION_ERROR', '請輸入目前的密碼和新密碼');
+  }
+  if (isPasswordTooLong(current) || isPasswordTooLong(newPassword)) {
+    return sendError(res, 400, 'VALIDATION_ERROR', '密碼太長（最多 72 bytes，中文一個字算 3 bytes）');
+  }
+  if ([...newPassword].length < MIN_PASSWORD_LENGTH) {
+    return sendError(res, 400, 'WEAK_PASSWORD', `新密碼至少要 ${MIN_PASSWORD_LENGTH} 個字`);
+  }
+  if (newPassword === current) {
+    return sendError(res, 400, 'WEAK_PASSWORD', '新密碼不能和目前的密碼一樣');
+  }
+  next();
+}
+
+const getPasswordHash = appDb.prepare('SELECT password_hash FROM users WHERE id = ?');
+const updatePassword = appDb.prepare(
+  'UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?'
+);
+// 同一個帳號在其他裝置的登入狀態
+const deleteOtherSessions = appDb.prepare(
+  "DELETE FROM sessions WHERE sid <> ? AND json_extract(sess, '$.userId') = ?"
+);
+
+// 只能改自己的密碼：改誰一律看登入的人（req.user.id），不看 body
+router.put('/password', loginRequired, validatePasswordBody, changePasswordLimiter, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { password_hash: oldHash } = getPasswordHash.get(userId);
+    if (!(await bcrypt.compare(req.body.current_password, oldHash))) {
+      return sendError(res, 400, 'WRONG_PASSWORD');
+    }
+
+    updatePassword.run(await hashPassword(req.body.new_password), userId);
+
+    // 換新的 session id，並把其他裝置登出（密碼可能就是在別的裝置被偷看到的）
+    req.session.regenerate((err) => {
+      if (err) return next(err);
+      req.session.userId = userId;
+      req.session.save((saveErr) => {
+        if (saveErr) return next(saveErr);
+        deleteOtherSessions.run(req.sessionID, userId);
+        res.json({ ok: true });
+      });
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
